@@ -29,6 +29,14 @@ await obj.print('document.pdf');
 // ...or printing a buffer.
 const byte = await readFile('document.pdf');
 await obj.print(byte);
+
+// Passing Job Options...
+await obj.print('document.pdf', {
+    jobOptions: {
+        media: "A4",
+        sides: "one-sided",
+    }
+})
 ```
 
 ## Typescript configuration

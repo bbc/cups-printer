@@ -79,13 +79,18 @@ export class Printer {
         Object.defineProperty(this, 'path', { writable: false });
     }
 
-    async print(path: string): Promise<void>;
-    async print(buffer: Buffer): Promise<void>;
-    async print(arg: string | Buffer): Promise<void> {
+    async print(path: string, options : {jobOptions?: Object[]}): Promise<void>;
+    async print(buffer: Buffer, options : {jobOptions?: Object[]}): Promise<void>;
+    async print(arg: string | Buffer, options : {jobOptions?: Object[]} = {jobOptions:[]}): Promise<void> {
+        let optArgs : string[] = []
+        Object.entries(options?.jobOptions || {}).map( ([key, value]) => {
+            optArgs.push("-o")
+            optArgs.push(`${key}=${value}`)
+        })
         if (typeof arg === 'string') {
             // Prints a file
             const path = resolve(arg);
-            await cmd('lp', [ '-d', this.name, path ]);
+            await cmd('lp', [ '-d', this.name, path, ...optArgs ]);
         } else {
             try {
                 const temp = tmpdir();
@@ -94,7 +99,7 @@ export class Printer {
                 
                 // Generate a temporal file
                 await writeFile(path, arg);
-                await cmd('lp', [ '-d', this.name, path ]);
+                await cmd('lp', [ '-d', this.name, path, ...optArgs ]);
                 await rm(path, { force: true });
             } catch (err) {
                 throw err
