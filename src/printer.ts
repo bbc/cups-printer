@@ -90,7 +90,7 @@ export class Printer {
         if (typeof arg === 'string') {
             // Prints a file
             const path = resolve(arg);
-            await cmd('lp', [ '-d', this.name, path, ...optArgs ]);
+            await cmd('lp', [ '-d', this.name, ...optArgs, path ]);
         } else {
             try {
                 const temp = tmpdir();
@@ -99,7 +99,7 @@ export class Printer {
                 
                 // Generate a temporal file
                 await writeFile(path, arg);
-                await cmd('lp', [ '-d', this.name, path, ...optArgs ]);
+                await cmd('lp', [ '-d', this.name, ...optArgs, path ]);
                 await rm(path, { force: true });
             } catch (err) {
                 throw err
